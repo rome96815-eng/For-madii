@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Surprise for Madina 🎉</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <style>
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    
+    body {
+      margin: 0; padding: 0;
+      background: linear-gradient(-45deg, #ff4e50, #f9d423, #ff007f, #7f00ff);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+      min-height: 100vh;
+      display: flex; justify-content: center; align-items: center;
+      overflow-x: hidden;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      width: 92%; max-width: 400px;
+      background: rgba(20, 15, 25, 0.92);
+      backdrop-filter: blur(12px);
+      border-radius: 28px; padding: 25px 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 25px rgba(255, 0, 127, 0.4);
+      text-align: center; position: relative;
+      border: 2px solid rgba(255, 0, 127, 0.4);
+    }
+
+    .card { display: flex; flex-direction: column; align-items: center; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .hidden { display: none !important; }
+
+    .avatar-box {
+      width: 90px; height: 90px; border-radius: 50%;
+      border: 4px dashed #ff007f; display: flex;
+      justify-content: center; align-items: center;
+      font-size: 40px; margin-bottom: 12px; background: rgba(255, 0, 127, 0.1);
+      box-shadow: 0 8px 15px rgba(255, 0, 127, 0.2);
+    }
+
+    h2 {
+      background: linear-gradient(45deg, #ff007f, #b5179e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 10px 0 5px 0; font-size: 22px; font-weight: 700;
+    }
+
+    p { color: #ccc; font-size: 13.5px; margin-bottom: 15px; }
+
+    input {
+      width: 100%; padding: 12px; border: 2.5px solid #ff007f;
+      border-radius: 15px; text-align: center; font-size: 15px;
+      margin-bottom: 10px; outline: none; background: rgba(255,255,255,0.08); color: #fff;
+    }
+    input::placeholder { color: #888; }
+
+    .hint-text { font-size: 12px; color: #f72585; font-weight: 600; margin-bottom: 12px; display: none; }
+
+    .btn {
+      background: linear-gradient(45deg, #ff007f, #7209b7);
+      color: white; border: none; padding: 12px 20px;
+      border-radius: 30px; font-size: 14px; font-weight: 700;
+      cursor: pointer; width: 100%;
+      box-shadow: 0 5px 15px rgba(255, 0, 127, 0.35);
+      margin-top: 8px; transition: transform 0.2s;
+    }
+    .btn:active { transform: scale(0.96); }
+
+    /* Loading Screen Styles */
+    .loading-heart {
+      width: 70px; height: 70px; background: #ff007f;
+      position: relative; transform: rotate(45deg);
+      margin: 30px auto; animation: pulseHeart 1s infinite;
+      box-shadow: 0 0 20px rgba(255,0,127,0.5);
+    }
+    .loading-heart::before, .loading-heart::after {
+      content: ''; width: 70px; height: 70px; background: #ff007f;
+      border-radius: 50%; position: absolute;
+    }
+    .loading-heart::before { top: -35px; left: 0; }
+    .loading-heart::after { left: -35px; top: 0; }
+    @keyframes pulseHeart {
+      0% { transform: rotate(45deg) scale(0.9); }
+      50% { transform: rotate(45deg) scale(1.1); }
+      100% { transform: rotate(45deg) scale(0.9); }
+    }
+    .progress-bar-container {
+      width: 100%; height: 10px; background: rgba(255,255,255,0.1);
+      border-radius: 10px; overflow: hidden; margin: 15px 0;
+    }
+    .progress-bar { width: 0%; height: 100%; background: linear-gradient(45deg, #ff007f, #7209b7); transition: width 0.1s linear; }
+
+    /* Calendar Box */
+    .calendar-box {
+      background: rgba(255,255,255,0.05); border: 2px solid #ff007f; border-radius: 18px;
+      padding: 15px; width: 100%; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; font-size: 12px; margin-top: 10px; }
+    .cal-day { padding: 6px; border-radius: 50%; color: #ddd; }
+    .cal-day.highlight { background: #ff007f; color: #fff; font-weight: bold; box-shadow: 0 3px 8px rgba(255,0,127,0.4); }
+
+    /* Envelope System */
+    .envelope {
+      width: 220px; height: 140px; background: #b5179e; border-radius: 10px;
+      position: relative; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; margin: 15px auto; box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      transition: transform 0.3s;
+    }
+    .envelope:hover { transform: scale(1.03); }
+    .envelope-seal { font-size: 28px; background: #fff; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 8px rgba(0,0,0,0.2); }
+    .letter-content {
+      background: rgba(255,255,255,0.08); border: 2px dashed #ff007f; border-radius: 15px;
+      padding: 20px; font-size: 13.5px; color: #eee; text-align: left;
+      line-height: 1.6; max-height: 220px; overflow-y: auto; width: 100%; margin-bottom: 15px;
+    }
+
+    /* Balloons Grid */
+    .balloon-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; margin-bottom: 15px; }
+    .balloon-item {
+      background: linear-gradient(135deg, #7209b7, #ff007f);
+      border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+      height: 90px; display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 11px; padding: 8px; text-align: center; cursor: pointer;
+      box-shadow: 0 5px 12px rgba(255,0,127,0.3); transition: transform 0.2s;
+    }
+    .balloon-item:active { transform: scale(0.9); }
+
+    /* Big Single Photo Frames */
+    .big-photo-box {
+      width: 100%; height: 280px; border-radius: 20px;
+      overflow: hidden; border: 4px solid #ff007f;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3); margin-bottom: 15px;
+      background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center;
+    }
+    .big-photo-box img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Cartoon Grid Gallery */
+    .cartoon-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; margin-bottom: 15px; }
+    .cartoon-card {
+      background: rgba(255,255,255,0.05); border: 2.5px solid #ff007f; border-radius: 16px;
+      padding: 10px; text-align: center; cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s;
+    }
+    .cartoon-card:active { transform: scale(0.95); }
+    .cartoon-card img { width: 100%; height: 110px; border-radius: 12px; object-fit: cover; margin-bottom: 6px; }
+    .cartoon-card span { font-size: 11.5px; font-weight: 600; color: #ff758c; }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Music -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="song.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="container">
+
+    <!-- Screen 0: Password Lock -->
+    <div id="screen-lock" class="card">
+      <div class="avatar-box">🔒</div>
+      <h2>Surprise Unlocking 💖</h2>
+      <p>Enter the passcode to open your surprise!</p>
+      <input type="password" id="passInput" placeholder="Enter password...">
+      <p id="hintBox" class="hint-text">💡 Hint: Date & Time</p>
+      <button class="btn" onclick="checkPass()">Unlock Surprise ✨</button>
+      <p id="errorMsg" style="color:#ff2e63; display:none; margin-top:8px; font-size:12px; font-weight:bold;">Wrong Code!</p>
+      <button class="btn" style="background:transparent; color:#bbb; box-shadow:none; font-size:11px;" onclick="showHint()">Need a hint?</button>
+    </div>
+
+    <!-- Screen 1: Loading Screen -->
+    <div id="screen-load" class="card hidden">
+      <h2>Preparing something special for you...</h2>
+      <p>Just a little surprise ✨</p>
+      <div class="loading-heart"></div>
+      <div class="progress-bar-container">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+      <p id="progressText" style="font-weight:600; color:#ff007f; font-size:13px;">0%</p>
+    </div>
+
+    <!-- Screen 2: Welcome -->
+    <div id="screen-2" class="card hidden">
+      <div class="avatar-box">🐼</div>
+      <h2>Hey Madina! ✨</h2>
+      <p>Today isn't just another day... It's a day worth celebrating because you exist! 💖</p>
+      <button class="btn" onclick="nextScreen(3)">Begin ➔</button>
+    </div>
+
+    <!-- Screen 3: Calendar Date -->
+    <div id="screen-3" class="card hidden">
+      <h2>Mark It Forever 🗓️</h2>
+      <p>Save this special date in your heart forever.</p>
+      <div class="calendar-box">
+        <div style="font-weight:bold; color:#ff007f; margin-bottom:5px;">AUGUST</div>
+        <div class="cal-grid">
+          <div class="cal-day" style="color:#666;">S</div><div class="cal-day" style="color:#666;">M</div><div class="cal-day" style="color:#666;">T</div><div class="cal-day" style="color:#666;">W</div><div class="cal-day" style="color:#666;">T</div><div class="cal-day" style="color:#666;">F</div><div class="cal-day" style="color:#666;">S</div>
+          <div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div><div class="cal-day">4</div><div class="cal-day">5</div><div class="cal-day">6</div><div class="cal-day highlight">17</div>
+          <div class="cal-day">18</div><div class="cal-day">19</div><div class="cal-day">20</div><div class="cal-day">21</div><div class="cal-day">22</div><div class="cal-day">23</div><div class="cal-day">24</div>
+        </div>
+      </div>
+      <button class="btn" onclick="nextScreen(4)">Next ➔</button>
+    </div>
+
+    <!-- Screen 4: Envelope Letter -->
+    <div id="screen-4" class="card hidden">
+      <h2>A Letter from My Heart 💌</h2>
+      <p>Click the envelope to open your special message.</p>
+      <div id="envelopeElem" class="envelope" onclick="openLetter()">
+        <div class="envelope-seal">💖</div>
+      </div>
+      <div id="letterBox" class="letter-content hidden">
+        <b>Dear Madina,</b><br><br>
+        May every single day of your life bring you immense joy, success, and endless reasons to smile. Wishing you a lifetime of love and beautiful moments! You are truly special! ✨❤️
+      </div>
+      <button id="letterNextBtn" class="btn hidden" onclick="nextScreen(5)">Next ➔</button>
+    </div>
+
+    <!-- Screen 5: Six Balloons -->
+    <div id="screen-5" class="card hidden">
+      <h2>Six Little Wishes 🎈</h2>
+      <p>Tap each shining balloon to reveal a wish!</p>
+      <div class="balloon-grid">
+        <div class="balloon-item" onclick="popBalloon(this, 'May you always have a reason to smile. 💖')">Balloon 1 🎈</div>
+        <div class="balloon-item" onclick="popBalloon(this, 'May your dreams become beautiful realities. ✨')">Balloon 2 🎈</div>
+        <div class="balloon-item" onclick="popBalloon(this, 'May happiness follow you everywhere. 🌸')">Balloon 3 🎈</div>
+        <div class="balloon-item" onclick="popBalloon(this, 'May every year make your life more beautiful. 🤍')">Balloon 4 🎈</div>
+        <div class="balloon-item" onclick="popBalloon(this, 'May you always be surrounded by love. 💕')">Balloon 5 🎈</div>
+        <div class="balloon-item" onclick="popBalloon(this, 'May this birthday be your happiest chapter! 🎉')">Balloon 6 🎈</div>
+      </div>
+      <button class="btn" onclick="nextScreen(6)">See Photos ➔</button>
+    </div>
+
+    <!-- Screen 6: First Big Photo -->
+    <div id="screen-6" class="card hidden">
+      <h2>Special Memory 📸</h2>
+      <p>A precious moment captured with Madina!</p>
+      <div class="big-photo-box">
+        <img src="pic1.jpg" alt="Photo 1" onerror="this.src='https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWU0bmRhMTd0ZnhucG1wNng0MXFhZndic3dtOGx2dnV4bmd0MHowdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Lq0h93752f6J9tijrh/giphy.gif'">
+      </div>
+      <button class="btn" onclick="nextScreen(7)">Next Photo ➔</button>
+    </div>
+
+    <!-- Screen 7: Second Big Photo -->
+    <div id="screen-7" class="card hidden">
+      <h2>Unforgettable Times ✨</h2>
+      <p>Another lovely memory together!</p>
+      <div class="big-photo-box">
+        <img src="pic2.jpg" alt="Photo 2" onerror="this.src='https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeGJycXQxZXBvbjJ5am1pdHFzazBnbWdtazQ1M3FmOWMzbHBtbjRxNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/kFfA47asIeAtdZ2YvP/giphy.gif'">
+      </div>
+      <button class="btn" onclick="nextScreen(8)">Continue to Memories ➔</button>
+    </div>
+
+    <!-- Screen 8: Cartoon Memories Grid -->
+    <div id="screen-8" class="card hidden">
+      <h2>Our Memories 🧸</h2>
+      <p>Some moments stay forever in our hearts.</p>
+      <div class="cartoon-grid">
+        <div class="cartoon-card" onclick="alert('Our first wonderful memory! 💖')">
+          <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWU0bmRhMTd0ZnhucG1wNng0MXFhZndic3dtOGx2dnV4bmd0MHowdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Lq0h93752f6J9tijrh/giphy.gif" alt="Cute Panda 1">
+          <span>Our first memory ✨</span>
+        </div>
+        <div class="cartoon-card" onclick="alert('Endless smiles together! 😊')">
+          <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYnJwNDdtYXRmZXBnMXQydmh4Njh3ZHR0aGJrbW8yYnQ4dWRkNjQyMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/eHP92R1Tqee4g" alt="Cute Panda 2">
+          <span>Endless smiles 🌟</span>
+        </div>
+        <div class="cartoon-card" onclick="alert('Every moment is special! 🌸')">
+          <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeGJycXQxZXBvbjJ5am1pdHFzazBnbWdtazQ1M3FmOWMzbHBtbjRxNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/kFfA47asIeAtdZ2YvP" alt="Cute Panda 3">
+          <span>Special moments 💕</span>
+        </div>
+        <div class="cartoon-card" onclick="alert('Two hearts, one journey! 🤍')">
+          <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXdzMWJva3l2Mnc2dzRqY3lyMnM0MWk3NGtzcmRwYjdzYzg2dW1ndyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/13B1WM6KPBYnIY" alt="Cute Panda 4">
+          <span>Best friends forever 🌷</span>
+        </div>
+      </div>
+      <button class="btn" onclick="triggerConfetti(); nextScreen(9);">Final Wish ➔</button>
+    </div>
+
+    <!-- Screen 9: Final Wish & Fireworks -->
+    <div id="screen-9" class="card hidden">
+      <div class="avatar-box">🎉</div>
+      <h2>Happy Birthday, Madina! 🥳</h2>
+      <p>May your life always be as beautiful as your heart. Have an amazing year ahead! ✨</p>
+      <p style="font-size:11px; color:#888; margin-top:15px;">— Made with love, just for you —</p>
+      <button class="btn" onclick="location.reload()">Replay The Surprise 🔄</button>
+    </div>
+
+  </div>
+
+  <script>
+    const correctPassword = "6 January 04:00_04:35";
+
+    function showHint() {
+      document.getElementById("hintBox").style.display = "block";
+    }
+
+    function checkPass() {
+      const input = document.getElementById("passInput").value.trim();
+      if (input === correctPassword) {
+        document.getElementById("screen-lock").classList.add("hidden");
+        document.getElementById("screen-load").classList.remove("hidden");
+        startLoading();
+        
+        const audio = document.getElementById("bgMusic");
+        audio.play().catch(e => console.log("Autoplay waiting"));
+      } else {
+        document.getElementById("errorMsg").style.display = "block";
+      }
+    }
+
+    function startLoading() {
+      let width = 0;
+      const bar = document.getElementById("progressBar");
+      const text = document.getElementById("progressText");
+      const interval = setInterval(() => {
+        if (width >= 100) {
+          clearInterval(interval);
+          nextScreen(2);
+        } else {
+          width += 2;
+          bar.style.width = width + "%";
+          text.innerText = width + "%";
+        }
+      }, 30);
+    }
+
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+      }
+    }
+
+    function nextScreen(num) {
+      document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
+      document.getElementById(`screen-${num}`).classList.remove("hidden");
+      triggerConfetti();
+    }
+
+    function openLetter() {
+      document.getElementById("envelopeElem").style.display = "none";
+      document.getElementById("letterBox").classList.remove("hidden");
+      document.getElementById("letterNextBtn").classList.remove("hidden");
+      triggerConfetti();
+    }
+
+    function popBalloon(element, message) {
+      element.style.background = "#555";
+      element.style.color = "#fff";
+      element.innerHTML = message;
+      triggerConfetti();
+    }
+  </script>
+</body>
+  </html>
+        
